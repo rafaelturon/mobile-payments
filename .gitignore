@@ -1,0 +1,12 @@
+# Log files
+*.log
+
+# Binaries
+dcrd-pi
+debug
+
+# Certificates
+*.rsa
+*.rsa.pub
+*.cert
+*.key

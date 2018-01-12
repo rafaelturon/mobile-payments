@@ -1,6 +1,24 @@
-## Decred cold wallet on the Raspberry Pi
+## Decred wallet on the Raspberry Pi
 
-This is a guide for setting up a [Decred](https://www.decred.org) cold wallet on the Raspberry Pi.
+### Features
+* Automatically starts services
+  - Decred daemon and wallet
+* Send info to external service
+  - Balance
+    * Available Balance
+  - Tickets stats
+    * Own Mempool
+    * Immature
+    * Live
+    * Total Subsidy (in DCR)
+
+* Generate RSA signing files via shell (adjust as needed):
+  - $ openssl genrsa -out app.rsa 1024
+  - $ openssl rsa -in app.rsa -pubout > app.rsa.pub
+
+### Installation
+
+This is a guide for setting up a [Decred](https://www.decred.org) wallet on the Raspberry Pi.
 
 
 1. Get the [Raspbian Lite image](https://www.raspberrypi.org/downloads/raspbian/) and [flash it onto a USB stick or SD card](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
@@ -13,7 +31,7 @@ This is a guide for setting up a [Decred](https://www.decred.org) cold wallet on
 4. Download the installer script and verify its SHA256 value:
 
 ````bash
-wget https://raw.githubusercontent.com/peterzen/decred-pi-wallet/master/install.sh
+wget https://raw.githubusercontent.com/rafaelturon/decred-pi-wallet/master/install.sh
 sha256sum install.sh
 2db3908d4e1d7325423b903e24ddd5b4d0181aa38f79ca474f56d373d4cc8ba8  install.sh
 
@@ -34,4 +52,4 @@ sha256sum install.sh
 
 
 
-Donate if you like the project: `DsjfpcKZLzv159J4phPndmvmVCK8Wq5RPsd`
+Donate if you like the project: `DshQnZKBvxJzJVPF15qUUAPj7pCEGtRzgaD`
