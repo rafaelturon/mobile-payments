@@ -12,10 +12,6 @@
     * Live
     * Total Subsidy (in DCR)
 
-* Generate RSA signing files via shell (adjust as needed):
-  - $ openssl genrsa -out app.rsa 1024
-  - $ openssl rsa -in app.rsa -pubout > app.rsa.pub
-
 ### Installation
 
 This is a guide for setting up a [Decred](https://www.decred.org) wallet on the Raspberry Pi.
@@ -35,8 +31,6 @@ This is a guide for setting up a [Decred](https://www.decred.org) wallet on the 
 
 5. Copy 'Decred Pi Wallet' files
  - scp ~/decred-pi-wallet pi@raspberrypi.local:~/
- - scp ~/app-rsa pi@raspberrypi.local:~/
- - scp ~/app-rsa.pub pi@raspberrypi.local:~/
 
 6. Download the installer script and verify its SHA256 value:
 

@@ -1,14 +1,15 @@
 package muxservice
 
 import (
+	"crypto/ecdsa"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"time"
 
-	"crypto/rsa"
-
+	"github.com/decred/dcrd/dcrutil"
 	"github.com/decred/dcrd/rpcclient"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
@@ -19,16 +20,16 @@ import (
 )
 
 const (
-	privKeyPath      = "app.rsa"
-	pubKeyPath       = "app.rsa.pub"
+	privKeyPath      = "rpc.key"
+	pubKeyPath       = "rpc.cert"
 	userName         = "Decred Pi Wallet"
 	tokenTimeoutHour = 10
 )
 
 var (
 	corsArray = []string{"http://localhost"}
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
+	verifyKey *ecdsa.PublicKey
+	ecdsaKey  *ecdsa.PrivateKey
 	cfg       *config.Config
 	client    *rpcclient.Client
 	logger    = config.MuxsLog
@@ -41,18 +42,20 @@ func fatal(err error) {
 }
 
 func initKeys() {
+	dcrwalletHomeDir := dcrutil.AppDataDir("dcrwallet", false)
+
 	logger.Debugf("Reading private key %s", privKeyPath)
-	signBytes, err := ioutil.ReadFile(privKeyPath)
+	signBytes, err := ioutil.ReadFile(filepath.Join(dcrwalletHomeDir, privKeyPath))
 	fatal(err)
 
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	ecdsaKey, err = jwt.ParseECPrivateKeyFromPEM(signBytes)
 	fatal(err)
 
 	logger.Debugf("Reading public key %s", pubKeyPath)
-	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
+	verifyBytes, err := ioutil.ReadFile(filepath.Join(dcrwalletHomeDir, pubKeyPath))
 	fatal(err)
 
-	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	verifyKey, err = jwt.ParseECPublicKeyFromPEM(verifyBytes)
 	fatal(err)
 }
 
@@ -153,7 +156,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := jwt.New(jwt.SigningMethodRS256)
+	token := jwt.New(jwt.SigningMethodES512)
 	claims := make(jwt.MapClaims)
 	claims["admin"] = true
 	claims["name"] = userName
@@ -168,7 +171,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		fatal(err)
 	}
 
-	tokenString, err := token.SignedString(signKey)
+	tokenString, err := token.SignedString(ecdsaKey)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

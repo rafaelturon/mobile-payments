@@ -57,7 +57,6 @@ type Config struct {
 	RPCPass          string        `short:"P" long:"rpcpass" default-mask:"-" description:"Password for RPC connections"`
 	APIKey           string        `short:"k" long:"apikey" description:"Key for API connections"`
 	APISecret        string        `short:"S" long:"apisecret" default-mask:"-" description:"Secret for API connections"`
-	APICert          string        `long:"apicert" description:"Certificate for API connections"`
 	APIListen        string        `long:"apilisten" description:"API server will only listen on localhost"`
 	APITokenDuration time.Duration `long:"apitokenduration" description:"How long to token be valid.  Valid time units are {s, m, h}.  Minimum 1 second"`
 	APIDisable       string        `long:"apidisable" description:"This allows one to quickly disable the API Server"`
