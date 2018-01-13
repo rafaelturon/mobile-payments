@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/rafaelturon/decred-pi-wallet/cmd/decredservices"
 	"github.com/rafaelturon/decred-pi-wallet/cmd/muxservice"
 	"github.com/rafaelturon/decred-pi-wallet/config"
 )
@@ -26,6 +27,11 @@ func dcrpMain() error {
 
 	// Show version and home dir at startup.
 	config.DcrpLog.Infof("Version %s (Go version %s)", config.Version(), runtime.Version())
+
+	err = decredservices.Start(cfg)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -46,6 +46,7 @@ var (
 
 	DcrpLog = backendLog.Logger("DCRP")
 	MuxsLog = backendLog.Logger("MUXS")
+	DsvcLog = backendLog.Logger("DSVC")
 )
 
 // Initialize package-global logger variables.
@@ -56,6 +57,7 @@ func init() {
 // subsystemLoggers maps each subsystem identifier to its associated logger.
 var subsystemLoggers = map[string]btclog.Logger{
 	"DCRP": DcrpLog,
+	"DSVC": DsvcLog,
 	"MUXS": MuxsLog,
 }
 

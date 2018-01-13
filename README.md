@@ -28,7 +28,17 @@ This is a guide for setting up a [Decred](https://www.decred.org) wallet on the 
 
 3. Log into the Pi for the first time and change your user password.  Set up SSH access if you need to log in remotely.
 
-4. Download the installer script and verify its SHA256 value:
+4. Build 'Decred Pi Wallet' using ARM
+ - env GOOS=linux GOARCH=arm go build -v github.com/rafaelturon/decred-pi-wallet
+ - Check ARM $: file ./decred-pi-wallet
+   * ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped 
+
+5. Copy 'Decred Pi Wallet' files
+ - scp ~/decred-pi-wallet pi@raspberrypi.local:~/
+ - scp ~/app-rsa pi@raspberrypi.local:~/
+ - scp ~/app-rsa.pub pi@raspberrypi.local:~/
+
+6. Download the installer script and verify its SHA256 value:
 
 ````bash
 wget https://raw.githubusercontent.com/rafaelturon/decred-pi-wallet/master/install.sh
@@ -37,15 +47,15 @@ sha256sum install.sh
 
 ````
 
-5. Run the install script that will update the system, install all the required packages and configure the Pi's [hardware random number generator (RNG)](http://fios.sector16.net/hardware-rng-on-raspberry-pi/).  After the upgrade and package installation is completed, it will ask you to confirm the kernel upgrade - answer *Yes*.  Once the upgrade is finished, the Pi will reboot.
+7. Run the install script that will update the system, install all the required packages and configure the Pi's [hardware random number generator (RNG)](http://fios.sector16.net/hardware-rng-on-raspberry-pi/).  After the upgrade and package installation is completed, it will ask you to confirm the kernel upgrade - answer *Yes*.  Once the upgrade is finished, the Pi will reboot.
 
 ````bash
 ./install.sh
 ````
 
-6. If you want to run a cold wallet, you can now disconnect the network cable and carry on with creating your wallet offline.
+8. If you want to run a cold wallet, you can now disconnect the network cable and carry on with creating your wallet offline.
 
-7. After the reboot, log back in and proceed with creating your wallet: see [Offline wallets](https://github.com/chappjc/dcrwallet/blob/master/docs/offline_wallets.md) for more information.
+9. After the reboot, log back in and proceed with creating your wallet: see [Offline wallets](https://github.com/chappjc/dcrwallet/blob/master/docs/offline_wallets.md) for more information.
 
 
 

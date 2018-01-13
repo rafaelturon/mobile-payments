@@ -28,9 +28,6 @@ mkdir ~/.dcrd ~/.dcrwallet ~/.dcrctl
 RPC_PASSWORD=$(openssl rand -hex 32)
 
 tee .dcrd/dcrd.conf > /dev/null <<DCRD_CONF
-connect=127.0.0.1:12345
-listen=127.0.0.1
-rpclisten=127.0.0.1
 rpcuser=rpc
 rpcpass=$RPC_PASSWORD
 DCRD_CONF
