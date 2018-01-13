@@ -58,6 +58,8 @@ decredbinfolder=decred
 
 ; Secure the RPC API by specifying the key and secret.  You must specify
 ; both or the RPC server will be disabled.
+; rpcuser=whatever_username_you_want
+; rpcpass=
 ; apikey=whatever_username_you_want
 ; apisecret=
 

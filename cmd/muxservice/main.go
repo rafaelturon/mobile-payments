@@ -9,6 +9,7 @@ import (
 
 	"crypto/rsa"
 
+	"github.com/decred/dcrd/rpcclient"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gorilla/mux"
@@ -29,6 +30,7 @@ var (
 	verifyKey *rsa.PublicKey
 	signKey   *rsa.PrivateKey
 	cfg       *config.Config
+	client    *rpcclient.Client
 	logger    = config.MuxsLog
 )
 
@@ -219,11 +221,20 @@ func main() {
 }
 
 // Start HTTP request multiplexer service
-func Start(tcfg *config.Config) {
+func Start(tcfg *config.Config, tclient *rpcclient.Client) {
 	cfg = tcfg
+	client = tclient
 	config.InitLogRotator(cfg.LogFile)
 	UseLogger(logger)
 	logger.Infof("APIKey %s", cfg.APIKey)
 	initKeys()
 	startServer()
+
+	// Get the current block count.
+	/*blockCount, err := client.GetBlockCount()
+	if err != nil {
+		config.DcrpLog.Errorf("Error counting blocks %v", err)
+	}
+	config.DcrpLog.Infof("Last Block: %d", blockCount)
+	*/
 }

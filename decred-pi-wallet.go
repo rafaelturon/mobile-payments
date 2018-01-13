@@ -28,11 +28,6 @@ func dcrpMain() error {
 	// Show version and home dir at startup.
 	config.DcrpLog.Infof("Version %s (Go version %s)", config.Version(), runtime.Version())
 
-	err = decredservices.Start(cfg)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 func main() {
@@ -41,5 +36,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	muxservice.Start(cfg)
+	client, err := decredservices.Start(cfg)
+	if err != nil {
+		config.DcrpLog.Errorf("Error connecting to 'decredservices' %v", err)
+	}
+
+	muxservice.Start(cfg, client)
 }

@@ -53,6 +53,8 @@ type Config struct {
 	NoFileLogging    bool          `long:"nofilelogging" description:"Disable file logging."`
 	DebugLevel       string        `short:"d" long:"debuglevel" description:"Logging level for all subsystems {trace, debug, info, warn, error, critical} -- You may also specify <subsystem>=<level>,<subsystem2>=<level>,... to set the log level for individual subsystems -- Use show to list available subsystems"`
 	SimNet           bool          `long:"simnet" description:"Use the simulation test network"`
+	RPCUser          string        `short:"u" long:"rpcuser" description:"Username for RPC connections"`
+	RPCPass          string        `short:"P" long:"rpcpass" default-mask:"-" description:"Password for RPC connections"`
 	APIKey           string        `short:"k" long:"apikey" description:"Key for API connections"`
 	APISecret        string        `short:"S" long:"apisecret" default-mask:"-" description:"Secret for API connections"`
 	APICert          string        `long:"apicert" description:"Certificate for API connections"`

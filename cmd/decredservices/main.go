@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/decred/dcrd/rpcclient"
 	"github.com/rafaelturon/decred-pi-wallet/config"
 )
 
 var (
-	cfg    *config.Config
-	logger = config.DsvcLog
+	ServiceConfig *config.Config
+	Log           = config.DsvcLog
 )
 
 func getScreenCommand(appDir string, appName string) (string, error) {
@@ -40,7 +41,7 @@ func getScreenCommand(appDir string, appName string) (string, error) {
 
 func executeBashCommand(argCmd string) (string, error) {
 	bashCmd := exec.Command("bash", "-c", argCmd)
-	logger.Debugf("Executing bash ~$ %s", argCmd)
+	Log.Debugf("Executing bash ~$ %s", argCmd)
 	bashOut, err := bashCmd.Output()
 	if err != nil {
 		return "", err
@@ -57,7 +58,7 @@ func startDaemonAndWallet(defaultDaemonFilename, defaultWalletFilename, defaultD
 	dcrdPs = "pidof " + defaultDaemonFilename
 	dcrdPsOut, err := executeBashCommand(dcrdPs)
 	if len(dcrdPsOut) == 0 && err != nil {
-		logger.Info("Starting decred daemon...")
+		Log.Info("Starting decred daemon...")
 		dcrdExec, err := getScreenCommand(defaultDecredDirname, defaultDaemonFilename)
 		if err != nil {
 			return err
@@ -65,17 +66,17 @@ func startDaemonAndWallet(defaultDaemonFilename, defaultWalletFilename, defaultD
 		dcrdArg = "screen -d -S dcrd -m " + dcrdExec
 		dcrdOut, err := executeBashCommand(dcrdArg)
 		if err != nil {
-			logger.Errorf("Error initializing 'dcrd': %s", dcrdOut)
+			Log.Errorf("Error initializing 'dcrd': %s", dcrdOut)
 			return err
 		}
 	} else {
-		logger.Debugf("Decred daemon process already running with PID: %s", strings.TrimSpace(dcrdPsOut))
+		Log.Debugf("Decred daemon process already running with PID: %s", strings.TrimSpace(dcrdPsOut))
 	}
 
 	dcrwalletPs = "pidof " + defaultWalletFilename
 	dcrwalletPsOut, err := executeBashCommand(dcrwalletPs)
 	if len(dcrwalletPsOut) == 0 && err != nil {
-		logger.Info("Starting decred wallet...")
+		Log.Info("Starting decred wallet...")
 		dcrwalletExec, err := getScreenCommand(defaultDecredDirname, defaultWalletFilename)
 		if err != nil {
 			return err
@@ -83,24 +84,36 @@ func startDaemonAndWallet(defaultDaemonFilename, defaultWalletFilename, defaultD
 		dcrwalletArg = "screen -d -S dcrwallet -m " + dcrwalletExec
 		dcrwalletOut, err := executeBashCommand(dcrwalletArg)
 		if err != nil {
-			logger.Errorf("Error initializing 'dcrwallet': %s", dcrwalletOut)
+			Log.Errorf("Error initializing 'dcrwallet': %s", dcrwalletOut)
 			return err
 		}
 	} else {
-		logger.Debugf("Decred wallet process already running with PID: %s", strings.TrimSpace(dcrwalletPsOut))
+		Log.Debugf("Decred wallet process already running with PID: %s", strings.TrimSpace(dcrwalletPsOut))
 	}
 
 	return nil
 }
 
 // Start Decred wallet and daemon services
-func Start(tcfg *config.Config) error {
-	cfg = tcfg
-	config.InitLogRotator(cfg.LogFile)
-	UseLogger(logger)
-	logger.Debugf("Decred daemon app name: %s", cfg.DaemonApp)
-	logger.Debugf("Decred wallet app name: %s", cfg.WalletApp)
-	logger.Debugf("Decred bin folder: %s", cfg.DecredBinFolder)
+func Start(tcfg *config.Config) (*rpcclient.Client, error) {
+	ServiceConfig = tcfg
+	config.InitLogRotator(ServiceConfig.LogFile)
+	UseLogger(Log)
+	Log.Debugf("Decred daemon app name: %s", ServiceConfig.DaemonApp)
+	Log.Debugf("Decred wallet app name: %s", ServiceConfig.WalletApp)
+	Log.Debugf("Decred bin folder: %s", ServiceConfig.DecredBinFolder)
 
-	return startDaemonAndWallet(cfg.DaemonApp, cfg.WalletApp, cfg.DecredBinFolder)
+	err := startDaemonAndWallet(ServiceConfig.DaemonApp, ServiceConfig.WalletApp, ServiceConfig.DecredBinFolder)
+	if err != nil {
+		Log.Errorf("Error starting 'Daemon and Wallet': %v", err)
+		return nil, err
+	}
+
+	client, err := newRPCService()
+	if err != nil {
+		Log.Errorf("Error starting 'rpcclient': %v", err)
+		return nil, err
+	}
+
+	return client, nil
 }

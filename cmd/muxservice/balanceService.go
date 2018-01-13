@@ -1,19 +1,29 @@
 package muxservice
 
+import "github.com/davecgh/go-spew/spew"
+
 // Balance stores total amount for accounts
 type Balance struct {
-	Amount float32 `json:"amount"`
+	Amount float64 `json:"amount"`
 }
 
 // GetBalance calculates and returns the balance of all accounts
 func GetBalance() (Balance, error) {
 	var balance Balance
+	balance.Amount = 0
 
-	balance.Amount = 30.32 // Mocked values
+	balances, err := client.GetBalance("*")
+	if err != nil {
+		logger.Errorf("Error %v", err)
+		return balance, err
+	}
 
-	//err := e.marshal(v, encOpts{escapeHTML: true})
-	//if err != nil {
-	//	return nil, err
-	//}
+	if len(balances.Balances) > 0 {
+		for _, value := range balances.Balances {
+			logger.Tracef("Balance:\n%v", spew.Sdump(value))
+			balance.Amount += value.Spendable
+		}
+	}
+
 	return balance, nil
 }

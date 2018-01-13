@@ -29,7 +29,7 @@ This is a guide for setting up a [Decred](https://www.decred.org) wallet on the 
 3. Log into the Pi for the first time and change your user password.  Set up SSH access if you need to log in remotely.
 
 4. Build 'Decred Pi Wallet' using ARM
- - env GOOS=linux GOARCH=arm go build -v github.com/rafaelturon/decred-pi-wallet
+ - $: env GOOS=linux GOARCH=arm go build -v github.com/rafaelturon/decred-pi-wallet
  - Check ARM $: file ./decred-pi-wallet
    * ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped 
 
