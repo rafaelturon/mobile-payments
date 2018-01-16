@@ -47,17 +47,25 @@
   </nav>
   <div class="content-wrapper">
     <div class="container-fluid">
+      <!-- general messages -->
+      <p id="call-message">
+          Accessing (secured) server endpoint.
+          <h2></h2>
+      </p>        
       <!-- balance view -->
       <div id="balance-view">
-        <p id="call-balance-message">
-          Accessing (secured) server endpoint.
-        </p>        
         <button id="btn-balance" class="btn btn-primary">
             Get Balance
         </button>
         <h2 id="balance-message"></h2>
       </div>
-
+      <!-- tickets view -->
+      <div id="tickets-view">
+        <button id="btn-tickets" class="btn btn-primary">
+            Get Tickets
+        </button>
+        <h2 id="tickets-message"></h2>
+      </div>
       <!-- Area Chart Example-->
       <div class="card mb-3">
         <div class="card-header">
