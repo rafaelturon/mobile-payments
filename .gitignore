@@ -10,3 +10,6 @@ debug
 *.rsa.pub
 *.cert
 *.key
+
+#MacOS
+.DS_Store

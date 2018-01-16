@@ -3,7 +3,7 @@
 ### Features
 * Automatically starts services
   - Decred daemon and wallet
-* Send info to external service
+* Expose a secure API service
   - Balance
     * Available Balance
   - Tickets stats

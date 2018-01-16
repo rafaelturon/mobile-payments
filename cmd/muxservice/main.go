@@ -88,6 +88,9 @@ func startServer() {
 	router.HandleFunc("/about", aboutHandler)
 	router.HandleFunc("/login", loginHandler)
 
+	// Static route
+	sRoutes := mux.NewRouter().PathPrefix("/web").Subrouter().StrictSlash(true)
+
 	// API middleware
 	apiRoutes := mux.NewRouter().PathPrefix("/api").Subrouter().StrictSlash(true)
 	apiRoutes.HandleFunc("/balance", balanceHandler)
@@ -97,6 +100,12 @@ func startServer() {
 	c := cors.New(cors.Options{
 		AllowedOrigins: corsArray,
 	})
+
+	// Create static route negroni handler
+	router.PathPrefix("/web").Handler(negroni.New(
+		negroni.NewStatic(http.Dir(".")),
+		negroni.Wrap(sRoutes),
+	))
 
 	// Create a new negroni for the api middleware
 	router.PathPrefix("/api").Handler(negroni.New(
