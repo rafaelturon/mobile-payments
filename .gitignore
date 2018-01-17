@@ -4,6 +4,7 @@
 # Binaries
 dcrd-pi
 debug
+*.bin
 
 # Certificates
 *.rsa

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/decred/dcrd/dcrutil"
@@ -16,12 +17,15 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rafaelturon/decred-pi-wallet/config"
 	"github.com/rs/cors"
+	"github.com/sec51/twofactor"
 	"github.com/urfave/negroni"
 )
 
 const (
+	otpFileName      = "otp.bin"
 	privKeyPath      = "rpc.key"
 	pubKeyPath       = "rpc.cert"
+	account          = "acccount"
 	userName         = "Decred Pi Wallet"
 	tokenTimeoutHour = 10
 )
@@ -93,8 +97,10 @@ func startServer() {
 
 	// API middleware
 	apiRoutes := mux.NewRouter().PathPrefix("/api").Subrouter().StrictSlash(true)
-	apiRoutes.HandleFunc("/balance", balanceHandler)
-	apiRoutes.HandleFunc("/tickets", ticketsHandler)
+	apiRoutes.HandleFunc("/twofactor", twoFactorHandler).Methods("GET")
+	apiRoutes.HandleFunc("/balance", balanceHandler).Methods("GET")
+	apiRoutes.HandleFunc("/tickets", ticketsHandler).Methods("GET")
+	apiRoutes.HandleFunc("/turnoff/{token_code:[0-9]+}", turnOffDevice).Methods("GET")
 
 	// CORS options
 	c := cors.New(cors.Options{
@@ -119,8 +125,44 @@ func startServer() {
 	logger.Critical(http.ListenAndServe(cfg.APIListen, router))
 }
 
+func turnOffDevice(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	codeToken := vars["token_code"]
+	deserializedOTPData, err := ioutil.ReadFile(otpFileName)
+	if err != nil {
+		fatal(err)
+	}
+	deserializedOTP, err := twofactor.TOTPFromBytes(deserializedOTPData, userName)
+	err = deserializedOTP.Validate(codeToken)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "Error validating 2FA token")
+		logger.Errorf("Error validating 2FA token %v", err)
+	} else {
+		logger.Warn("Shutting down device")
+	}
+}
+
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Version: " + config.Version()))
+}
+
+func twoFactorHandler(w http.ResponseWriter, r *http.Request) {
+	qrBytes, err := GetTwoFactorQR(account, userName, otpFileName)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "Error setting 2FA token - ", err)
+		logger.Errorf("Error setting 2FA token %v", err)
+	} else {
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", strconv.Itoa(len(qrBytes)))
+		if _, err := w.Write(qrBytes); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, "Error getting 2FA")
+			logger.Errorf("Error getting 2FA %v", err)
+		}
+	}
 }
 
 func balanceHandler(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +171,6 @@ func balanceHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "Error getting Balance")
 		logger.Errorf("Error getting balance %v", err)
-		fatal(err)
 	}
 	jsonResponse(t, w)
 }

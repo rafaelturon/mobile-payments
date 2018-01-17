@@ -3,7 +3,7 @@
 ### Features
 * Automatically starts services
   - Decred daemon and wallet
-* Expose a secure API service
+* Exposes a secure API service
   - Balance
     * Available Balance
   - Tickets stats
@@ -11,6 +11,9 @@
     * Immature
     * Live
     * Total Subsidy (in DCR)
+* Enables access to more critical commands using 2FA
+  - Device shutdown
+  - Ticket buying
 
 ### Installation
 
