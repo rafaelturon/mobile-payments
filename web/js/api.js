@@ -17,7 +17,10 @@ $('document').ready(function() {
 function callbackBalance(result) {
     dcrAmount = result.amount;
     $('#balance-view h2').text("Balance: " + currencyApi.toUpperCase() + " " + (dcrAmount * priceApi).toFixed(2));
+<<<<<<< HEAD
     $('#balance-view h2').append(" (DCR " + dcrAmount + ")")
+=======
+>>>>>>> 32fec19ccdfc81de6f1c5be906d2049ee3e15be4
 }
 
 function callbackTickets(result) {
@@ -26,7 +29,10 @@ function callbackTickets(result) {
     live = result.live;
     totalSubsidy = result.totalSubsidy;
     selectedCurrency = currencyApi.toUpperCase();
+<<<<<<< HEAD
     $('#tickets-view h2').text("");
+=======
+>>>>>>> 32fec19ccdfc81de6f1c5be906d2049ee3e15be4
     $('#tickets-view h2').append("OwnMempool: " + selectedCurrency + " " + (ownMempool * priceApi).toFixed(2));
     $('#tickets-view h2').append(" | ");
     $('#tickets-view h2').append("Immature: " + selectedCurrency + " " + (immature * priceApi).toFixed(2));
@@ -69,6 +75,10 @@ function callPriceUpdate(tickerId, currency) {
           callbackPriceUpdate(result[0]["price_"+currency]);
         })
         .fail(function(err) {
+<<<<<<< HEAD
           $('#balance-view h2').text('CoinMarketCap API Request failed: ' + err.statusText);
+=======
+          $('#balance-view h2').text('Request failed: ' + err.statusText);
+>>>>>>> 32fec19ccdfc81de6f1c5be906d2049ee3e15be4
         });
 }
