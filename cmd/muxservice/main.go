@@ -139,7 +139,14 @@ func turnOffDevice(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Error validating 2FA token")
 		logger.Errorf("Error validating 2FA token %v", err)
 	} else {
-		logger.Warn("Shutting down device")
+		deviceMessage, err := TurnOffDevice()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, "Error turning off device")
+			logger.Errorf("Error turning off device %v", err)
+		} else {
+			fmt.Fprintln(w, "Device Response: "+deviceMessage)
+		}
 	}
 }
 
