@@ -91,6 +91,7 @@ type Token struct {
 type TicketBuyRequest struct {
 	SpendLimit dcrutil.Amount `json:"spendLimit"`
 	NumTickets int            `json:"numTickets"`
+	CodeToken  string         `json:"codeToken"`
 }
 
 func startServer() {
@@ -132,15 +133,22 @@ func startServer() {
 	logger.Critical(http.ListenAndServe(cfg.APIListen, router))
 }
 
-func turnOffDevice(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	codeToken := vars["token_code"]
+func validateToken(codeToken string) error {
 	deserializedOTPData, err := ioutil.ReadFile(otpFileName)
 	if err != nil {
 		fatal(err)
 	}
 	deserializedOTP, err := twofactor.TOTPFromBytes(deserializedOTPData, userName)
 	err = deserializedOTP.Validate(codeToken)
+
+	return err
+}
+
+func turnOffDevice(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	codeToken := vars["token_code"]
+	err := validateToken(codeToken)
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "Error validating 2FA token")
@@ -206,14 +214,21 @@ func ticketsBuyHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(requestBody, &ticketBuyRequest)
 	poolFees, err := dcrutil.NewAmount(cfg.PoolFees)
 
-	hashes, err := BuyTicket(ticketBuyRequest.SpendLimit, cfg.VotingAddress, &ticketBuyRequest.NumTickets, cfg.PoolAddress, &poolFees, 10)
-
+	err = validateToken(ticketBuyRequest.CodeToken)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "Error buying ticket - ", err)
-		logger.Errorf("Error buying ticket %v", err)
+		fmt.Fprintln(w, "Error validating 2FA token")
+		logger.Errorf("Error validating 2FA token %v", err)
 	} else {
-		fmt.Fprintln(w, "Transaction done with success: "+hashes)
+		hashes, err := BuyTicket(ticketBuyRequest.SpendLimit, cfg.VotingAddress, &ticketBuyRequest.NumTickets, cfg.PoolAddress, &poolFees, 10)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintln(w, "Error buying ticket - ", err)
+			logger.Errorf("Error buying ticket %v", err)
+		} else {
+			fmt.Fprintln(w, "Transaction done with success: "+hashes)
+		}
 	}
 
 }
