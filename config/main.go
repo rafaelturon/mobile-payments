@@ -41,25 +41,29 @@ var (
 //
 // See loadConfig for details on the configuration load process.
 type Config struct {
-	DataDir          string        `short:"b" long:"datadir" description:"Directory to store data"`
-	DaemonApp        string        `long:"daemonapp" description:"Decred Daemon Name"`
-	WalletApp        string        `long:"walletapp" description:"Decred Wallet Name"`
-	DecredBinFolder  string        `long:"decredbinfolder" description:"Decred binaries location"`
-	HomeDir          string        `short:"A" long:"appdata" description:"Path to application home directory"`
-	ShowVersion      bool          `short:"V" long:"version" description:"Display version information and exit"`
-	ConfigFile       string        `short:"C" long:"configfile" description:"Path to configuration file"`
-	LogDir           string        `long:"logdir" description:"Directory to log output."`
-	LogFile          string        `long:"logfile" description:"File to log output."`
-	NoFileLogging    bool          `long:"nofilelogging" description:"Disable file logging."`
-	DebugLevel       string        `short:"d" long:"debuglevel" description:"Logging level for all subsystems {trace, debug, info, warn, error, critical} -- You may also specify <subsystem>=<level>,<subsystem2>=<level>,... to set the log level for individual subsystems -- Use show to list available subsystems"`
-	SimNet           bool          `long:"simnet" description:"Use the simulation test network"`
-	RPCUser          string        `short:"u" long:"rpcuser" description:"Username for RPC connections"`
-	RPCPass          string        `short:"P" long:"rpcpass" default-mask:"-" description:"Password for RPC connections"`
-	APIKey           string        `short:"k" long:"apikey" description:"Key for API connections"`
-	APISecret        string        `short:"S" long:"apisecret" default-mask:"-" description:"Secret for API connections"`
-	APIListen        string        `long:"apilisten" description:"API server will only listen on localhost"`
-	APITokenDuration time.Duration `long:"apitokenduration" description:"How long to token be valid.  Valid time units are {s, m, h}.  Minimum 1 second"`
-	APIDisable       string        `long:"apidisable" description:"This allows one to quickly disable the API Server"`
+	DataDir          string          `short:"b" long:"datadir" description:"Directory to store data"`
+	WalletPass       string          `long:"walletpass" default-mask:"-" description:"The public wallet password -- Only required if the wallet was created with one"`
+	PoolAddress      dcrutil.Address `long:"pooladdress" description:"The ticket pool address where ticket fees will go to"`
+	PoolFees         float64         `long:"poolfees" description:"The per-ticket fee mandated by the ticket pool as a percent (e.g. 1.00 for 1.00% fee)"`
+	VotingAddress    dcrutil.Address `long:"votingaddress" description:"Purchase tickets with voting rights assigned to this address"`
+	DaemonApp        string          `long:"daemonapp" description:"Decred Daemon Name"`
+	WalletApp        string          `long:"walletapp" description:"Decred Wallet Name"`
+	DecredBinFolder  string          `long:"decredbinfolder" description:"Decred binaries location"`
+	HomeDir          string          `short:"A" long:"appdata" description:"Path to application home directory"`
+	ShowVersion      bool            `short:"V" long:"version" description:"Display version information and exit"`
+	ConfigFile       string          `short:"C" long:"configfile" description:"Path to configuration file"`
+	LogDir           string          `long:"logdir" description:"Directory to log output."`
+	LogFile          string          `long:"logfile" description:"File to log output."`
+	NoFileLogging    bool            `long:"nofilelogging" description:"Disable file logging."`
+	DebugLevel       string          `short:"d" long:"debuglevel" description:"Logging level for all subsystems {trace, debug, info, warn, error, critical} -- You may also specify <subsystem>=<level>,<subsystem2>=<level>,... to set the log level for individual subsystems -- Use show to list available subsystems"`
+	SimNet           bool            `long:"simnet" description:"Use the simulation test network"`
+	RPCUser          string          `short:"u" long:"rpcuser" description:"Username for RPC connections"`
+	RPCPass          string          `short:"P" long:"rpcpass" default-mask:"-" description:"Password for RPC connections"`
+	APIKey           string          `short:"k" long:"apikey" description:"Key for API connections"`
+	APISecret        string          `short:"S" long:"apisecret" default-mask:"-" description:"Secret for API connections"`
+	APIListen        string          `long:"apilisten" description:"API server will only listen on localhost"`
+	APITokenDuration time.Duration   `long:"apitokenduration" description:"How long to token be valid.  Valid time units are {s, m, h}.  Minimum 1 second"`
+	APIDisable       string          `long:"apidisable" description:"This allows one to quickly disable the API Server"`
 }
 
 // cleanAndExpandPath expands environment variables and leading ~ in the

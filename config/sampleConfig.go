@@ -19,7 +19,10 @@ const FileContents = `[Application Options]
 ; environment variables are typically %VARIABLE%, but they must be accessed with
 ; $VARIABLE here.  Also, ~ is expanded to $LOCALAPPDATA on Windows.
 ; datadir=~/.dcrd/data
-
+pooladdress=POOL-ADDRESS
+poolfees=5
+votingaddress=TICKET-ADDRESS
+walletpass=WALLET-PASS
 
 ; ------------------------------------------------------------------------------
 ; Decred Applications

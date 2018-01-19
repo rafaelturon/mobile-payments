@@ -87,6 +87,12 @@ type Token struct {
 	Token string `json:"token"`
 }
 
+// TicketBuyRequest objct
+type TicketBuyRequest struct {
+	SpendLimit dcrutil.Amount `json:"spendLimit"`
+	NumTickets int            `json:"numTickets"`
+}
+
 func startServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/about", aboutHandler)
@@ -100,6 +106,7 @@ func startServer() {
 	apiRoutes.HandleFunc("/twofactor", twoFactorHandler).Methods("GET")
 	apiRoutes.HandleFunc("/balance", balanceHandler).Methods("GET")
 	apiRoutes.HandleFunc("/tickets", ticketsHandler).Methods("GET")
+	apiRoutes.HandleFunc("/tickets/buy", ticketsBuyHandler).Methods("POST")
 	apiRoutes.HandleFunc("/turnoff/{token_code:[0-9]+}", turnOffDevice).Methods("GET")
 
 	// CORS options
@@ -191,6 +198,24 @@ func ticketsHandler(w http.ResponseWriter, r *http.Request) {
 		fatal(err)
 	}
 	jsonResponse(t, w)
+}
+
+func ticketsBuyHandler(w http.ResponseWriter, r *http.Request) {
+	var ticketBuyRequest TicketBuyRequest
+	requestBody, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(requestBody, &ticketBuyRequest)
+	poolFees, err := dcrutil.NewAmount(cfg.PoolFees)
+
+	hashes, err := BuyTicket(ticketBuyRequest.SpendLimit, cfg.VotingAddress, &ticketBuyRequest.NumTickets, cfg.PoolAddress, &poolFees, 10)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "Error buying ticket - ", err)
+		logger.Errorf("Error buying ticket %v", err)
+	} else {
+		fmt.Fprintln(w, "Transaction done with success: "+hashes)
+	}
+
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -289,12 +314,4 @@ func Start(tcfg *config.Config, tclient *rpcclient.Client) {
 	logger.Infof("APIKey %s", cfg.APIKey)
 	initKeys()
 	startServer()
-
-	// Get the current block count.
-	/*blockCount, err := client.GetBlockCount()
-	if err != nil {
-		config.DcrpLog.Errorf("Error counting blocks %v", err)
-	}
-	config.DcrpLog.Infof("Last Block: %d", blockCount)
-	*/
 }
