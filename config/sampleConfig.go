@@ -21,6 +21,7 @@ const FileContents = `[Application Options]
 ; datadir=~/.dcrd/data
 pooladdress=POOL-ADDRESS
 poolfees=5
+ticketFee=1
 votingaddress=TICKET-ADDRESS
 walletpass=WALLET-PASS
 

@@ -15,7 +15,7 @@ type Ticket struct {
 
 // BuyTicket using stake pool
 func BuyTicket(spendLimit dcrutil.Amount, ticketAddress dcrutil.Address,
-	numTickets *int, poolAddress dcrutil.Address, poolFees *dcrutil.Amount, unlockTimeout int64) (string, error) {
+	numTickets *int, poolAddress dcrutil.Address, poolFees *dcrutil.Amount, ticketFee *dcrutil.Amount, unlockTimeout int64) (string, error) {
 	hashResult := ""
 	stakeInfo, err := client.GetStakeInfo()
 	if err != nil {
@@ -32,7 +32,7 @@ func BuyTicket(spendLimit dcrutil.Amount, ticketAddress dcrutil.Address,
 	expiry := 0
 	minConf := 1
 	splitTx := false
-	hashes, err := client.PurchaseTicket(fromAccount, spendLimit, &minConf, ticketAddress, numTickets, poolAddress, poolFees, &expiry, &splitTx)
+	hashes, err := client.PurchaseTicket(fromAccount, spendLimit, &minConf, ticketAddress, numTickets, poolAddress, poolFees, &expiry, &splitTx, ticketFee)
 	for i := range hashes {
 		logger.Infof("Purchased ticket %v at stake difficulty %v", hashes[i], stakeInfo.Difficulty)
 		hashResult += hashes[i].String() + " | "

@@ -213,6 +213,7 @@ func ticketsBuyHandler(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(requestBody, &ticketBuyRequest)
 	poolFees, err := dcrutil.NewAmount(cfg.PoolFees)
+	ticketFee, err := dcrutil.NewAmount(cfg.TicketFee)
 
 	err = validateToken(ticketBuyRequest.CodeToken)
 	if err != nil {
@@ -220,7 +221,7 @@ func ticketsBuyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Error validating 2FA token")
 		logger.Errorf("Error validating 2FA token %v", err)
 	} else {
-		hashes, err := BuyTicket(ticketBuyRequest.SpendLimit, cfg.VotingAddress, &ticketBuyRequest.NumTickets, cfg.PoolAddress, &poolFees, 10)
+		hashes, err := BuyTicket(ticketBuyRequest.SpendLimit, cfg.VotingAddress, &ticketBuyRequest.NumTickets, cfg.PoolAddress, &poolFees, &ticketFee, 10)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

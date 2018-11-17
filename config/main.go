@@ -45,6 +45,7 @@ type Config struct {
 	WalletPass       string          `long:"walletpass" default-mask:"-" description:"The public wallet password -- Only required if the wallet was created with one"`
 	PoolAddress      dcrutil.Address `long:"pooladdress" description:"The ticket pool address where ticket fees will go to"`
 	PoolFees         float64         `long:"poolfees" description:"The per-ticket fee mandated by the ticket pool as a percent (e.g. 1.00 for 1.00% fee)"`
+	TicketFee        float64         `long:"ticketfee" description:"Ticket fee is the DCR/kB rate you’ll pay to have your ticket purchase be included in a block by a miner"`
 	VotingAddress    dcrutil.Address `long:"votingaddress" description:"Purchase tickets with voting rights assigned to this address"`
 	DaemonApp        string          `long:"daemonapp" description:"Decred Daemon Name"`
 	WalletApp        string          `long:"walletapp" description:"Decred Wallet Name"`
